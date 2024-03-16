@@ -56,7 +56,8 @@ export const setupSocketIO = (server: http.Server) => {
           type: ContentType.Text,
         })
         await newMessage.update()
-        socket.emit('response', { message: newMessage })
+        socket.emit('response', { event: 'send-message', message: newMessage })
+        updateConversation(convoId, newMessage)
       } catch (_) {
         socket.emit('error', 'There was an error sending the message.')
       }
@@ -72,7 +73,10 @@ export const setupSocketIO = (server: http.Server) => {
       try {
         const newConversation = new Conversation({ name: name })
         await newConversation.update()
-        socket.emit('response', { conversation: newConversation })
+        socket.emit('response', {
+          event: 'create-conversation',
+          conversation: newConversation,
+        })
       } catch (_) {
         socket.emit('error', 'There was an error creating the conversation.')
       }
@@ -88,7 +92,10 @@ export const setupSocketIO = (server: http.Server) => {
       try {
         const conversation = await Conversation.findById(convoId)
         await conversation.delete()
-        socket.emit('response', { conversation: conversation })
+        socket.emit('response', {
+          event: 'delete-conversation',
+          conversation: conversation,
+        })
       } catch (_) {
         socket.emit('error', 'There was an error deleting the conversation.')
       }
