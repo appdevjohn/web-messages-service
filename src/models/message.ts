@@ -12,6 +12,8 @@ class Message {
   convoName?: string
   content: string
   type: ContentType
+  senderName: string
+  senderAvatar: string
   id?: string
 
   constructor(config: {
@@ -21,6 +23,8 @@ class Message {
     convoName?: string
     content: string
     type: ContentType
+    senderName: string
+    senderAvatar: string
     id?: string
   }) {
     this.createdAt = config.createdAt
@@ -29,6 +33,8 @@ class Message {
     this.convoName = config.convoName
     this.content = config.content
     this.type = config.type
+    this.senderName = config.senderName
+    this.senderAvatar = config.senderAvatar
     this.id = config.id
   }
 
@@ -39,13 +45,26 @@ class Message {
     let result
     if (this.id) {
       result = await query(
-        'UPDATE messages SET convo_id = $1, content = $2, type = $3 WHERE message_id = $4 RETURNING *;',
-        [this.convoId, this.content, this.type, this.id]
+        'UPDATE messages SET convo_id = $1, content = $2, type = $3, sender_name = $4, sender_avatar = $5 WHERE message_id = $6 RETURNING *;',
+        [
+          this.convoId,
+          this.content,
+          this.type,
+          this.senderName,
+          this.senderAvatar,
+          this.id,
+        ]
       )
     } else {
       result = await query(
-        'INSERT INTO messages (convo_id, content, type) VALUES ($1, $2, $3) RETURNING *;',
-        [this.convoId, this.content, this.type]
+        'INSERT INTO messages (convo_id, content, type, sender_name, sender_avatar) VALUES ($1, $2, $3, $4, $5) RETURNING *;',
+        [
+          this.convoId,
+          this.content,
+          this.type,
+          this.senderName,
+          this.senderAvatar,
+        ]
       )
     }
 
@@ -53,6 +72,8 @@ class Message {
     this.type = result.rows[0]['type']
     this.convoId = result.rows[0]['convo_id']
     this.convoName = result.rows[0]['conversation_name']
+    this.senderName = result.rows[0]['sender_name']
+    this.senderAvatar = result.rows[0]['sender_avatar']
     this.createdAt = result.rows[0]['created_at']
     this.updatedAt = result.rows[0]['updated_at']
     this.id = result.rows[0]['message_id']
@@ -78,6 +99,8 @@ class Message {
         m.convo_id,
         m.content,
         m.type,
+        m.sender_name,
+        m.sender_avatar,
         c.name AS conversation_name
       FROM messages m LEFT JOIN conversations c ON m.convo_id = c.convo_id
       WHERE m.convo_id = $1
@@ -101,6 +124,8 @@ class Message {
         convoName: row['conversation_name'],
         content: row['content'],
         type: row['type'],
+        senderName: row['sender_name'],
+        senderAvatar: row['sender_avatar'],
         id: row['message_id'],
       })
     })

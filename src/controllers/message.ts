@@ -35,12 +35,16 @@ router.post(
   async (req: Request, res: Response, next: NextFunction) => {
     const convoId: string = req.body.convoId
     const content: string = req.body.content
+    const userName: string = req.body.userName
+    const userAvatar: string = req.body.userAvatar
 
     try {
       const newMessage = new Message({
         convoId: convoId,
         content: content,
         type: ContentType.Text,
+        senderName: userName,
+        senderAvatar: userAvatar,
       })
       await newMessage.update()
 

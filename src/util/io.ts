@@ -40,28 +40,36 @@ export const setupSocketIO = (server: http.Server) => {
     })
 
     // Send a message.
-    socket.on('send-message', async ({ convoId, content }) => {
-      if (!convoId || !content) {
-        socket.emit(
-          'error',
-          'Sending a message requires both convoId and content values.'
-        )
-        return
-      }
+    socket.on(
+      'send-message',
+      async ({ convoId, content, userName, userAvatar }) => {
+        if (!convoId || !content || !userName || !userAvatar) {
+          socket.emit(
+            'error',
+            'Sending a message requires both convoId and content values.'
+          )
+          return
+        }
 
-      try {
-        const newMessage = new Message({
-          convoId: convoId,
-          content: content,
-          type: ContentType.Text,
-        })
-        await newMessage.update()
-        socket.emit('response', { event: 'send-message', message: newMessage })
-        updateConversation(convoId, newMessage)
-      } catch (_) {
-        socket.emit('error', 'There was an error sending the message.')
+        try {
+          const newMessage = new Message({
+            convoId: convoId,
+            content: content,
+            type: ContentType.Text,
+            senderName: userName,
+            senderAvatar: userAvatar,
+          })
+          await newMessage.update()
+          socket.emit('response', {
+            event: 'send-message',
+            message: newMessage,
+          })
+          updateConversation(convoId, newMessage)
+        } catch (_) {
+          socket.emit('error', 'There was an error sending the message.')
+        }
       }
-    })
+    )
 
     // Create a conversation.
     socket.on('create-conversation', async ({ name }) => {
