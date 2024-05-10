@@ -82,6 +82,50 @@ class Conversation {
       throw new Error('There is no conversation with that ID.')
     }
   }
+
+  /**
+   * Returns an array of Conversations that are active.
+   * @param daysOld The number of days a conversation has been inactive with no new messages.
+   * @param shouldDelete Optional boolean for whether or not the returned records should be deleted.
+   * @returns An array of active Conversation objects.
+   */
+  static findByAge = async (
+    daysOld: number,
+    shouldDelete: boolean = false
+  ): Promise<Conversation[]> => {
+    const date = new Date()
+    date.setDate(date.getDate() - daysOld)
+
+    console.log(`${date.toISOString().split('T')[0]}`)
+
+    const dbConversations = await query(
+      'SELECT * FROM conversations WHERE updated_at < $1;',
+      [`${date.toISOString().split('T')[0]}`]
+    )
+
+    if (shouldDelete) {
+      await query(
+        `
+        WITH convo_deletes AS (
+          DELETE FROM conversations WHERE updated_at < $1 RETURNING convo_id
+        )
+        DELETE FROM messages WHERE convo_id IN (SELECT convo_id from convo_deletes);
+        `,
+        [`${date.toISOString().split('T')[0]}`]
+      )
+    }
+
+    const conversations = dbConversations.rows.map((c) => {
+      return new Conversation({
+        createdAt: dbConversations.rows[0]['created_at'],
+        updatedAt: dbConversations.rows[0]['updated_at'],
+        name: dbConversations.rows[0]['name'],
+        id: dbConversations.rows[0]['convo_id'],
+      })
+    })
+
+    return conversations
+  }
 }
 
 export default Conversation

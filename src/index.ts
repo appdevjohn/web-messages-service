@@ -1,9 +1,10 @@
 import path from 'path'
 import { createServer } from 'http'
 import express, { Request, Response, NextFunction } from 'express'
+import { CronJob } from 'cron'
 import cors from 'cors'
-import { Server } from 'socket.io'
 import dotenv from 'dotenv'
+import { deleteConversations } from './util/cron'
 dotenv.config({ path: path.join(__dirname, '..', '.env') })
 
 import { setupSocketIO } from './util/io'
@@ -26,6 +27,13 @@ app.get('/', (_: Request, res: Response, __: NextFunction) => {
 app.use(messageController)
 app.use(conversationController)
 
+const job = CronJob.from({
+  cronTime: '0 0 * * * *',
+  onTick: deleteConversations,
+  timeZone: 'America/New_York',
+})
+
 server.listen(process.env.PORT || 8000, () => {
   console.log(`Now listening on port ${process.env.PORT || 8000}`)
+  job.start()
 })
