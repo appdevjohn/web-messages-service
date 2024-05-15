@@ -4,12 +4,12 @@ import express, { Request, Response, NextFunction } from 'express'
 import { CronJob } from 'cron'
 import cors from 'cors'
 import dotenv from 'dotenv'
-import { deleteConversations } from './util/cron'
 dotenv.config({ path: path.join(__dirname, '..', '.env') })
 
 import { setupSocketIO } from './util/io'
 import messageController from './controllers/message'
 import conversationController from './controllers/conversation'
+import { deleteConversations } from './util/cron'
 
 const app = express()
 const server = createServer(app)

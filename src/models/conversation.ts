@@ -96,8 +96,6 @@ class Conversation {
     const date = new Date()
     date.setDate(date.getDate() - daysOld)
 
-    console.log(`${date.toISOString().split('T')[0]}`)
-
     const dbConversations = await query(
       'SELECT * FROM conversations WHERE updated_at < $1;',
       [`${date.toISOString().split('T')[0]}`]
