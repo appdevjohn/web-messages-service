@@ -1,6 +1,7 @@
 import { Router, Request, Response, NextFunction } from 'express'
 
 import Message, { ContentType } from '../models/message'
+import Conversation from '../models/conversation'
 
 const router = Router()
 
@@ -16,10 +17,12 @@ router.get(
       : undefined
 
     try {
+      const conversation = await Conversation.findById(convoId)
       const messages = await Message.findByConvoId(convoId, limit, skip)
 
       return res.status(200).json({
         messages: messages,
+        conversation: conversation,
       })
     } catch (error) {
       return res.status(500).json({
