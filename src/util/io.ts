@@ -34,7 +34,11 @@ export const setupSocketIO = (server: http.Server) => {
       try {
         const conversation = await Conversation.findById(convoId)
         const messages = await Message.findByConvoId(convoId, 50, 0)
-        socket.emit('messages', { messages, conversation })
+        socket.emit('messages', {
+          messages,
+          conversation,
+          daysRemaining: conversation.getDaysRemaining(),
+        })
       } catch (error) {
         socket.emit(
           'error',
@@ -88,6 +92,7 @@ export const setupSocketIO = (server: http.Server) => {
         socket.emit('response', {
           event: 'create-conversation',
           conversation: newConversation,
+          daysRemaining: newConversation.getDaysRemaining(),
         })
       } catch (_) {
         socket.emit('error', 'There was an error creating the conversation.')

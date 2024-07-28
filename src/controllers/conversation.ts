@@ -15,6 +15,7 @@ router.post(
 
       return res.status(200).json({
         conversation: newConversation,
+        daysRemaining: newConversation.getDaysRemaining(),
       })
     } catch (error) {
       return res.status(500).json({

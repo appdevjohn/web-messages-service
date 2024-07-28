@@ -1,5 +1,8 @@
 import query from '../util/db'
 
+const DAY_MILLISECONDS = 24 * 60 * 60 * 1000
+const EXPIRY_DAYS = 30
+
 class Conversation {
   createdAt?: Date
   updatedAt?: Date
@@ -57,6 +60,18 @@ class Conversation {
       `,
       [this.id]
     )
+  }
+
+  getDaysRemaining(): number {
+    if (!this.updatedAt) return -1
+
+    const date1 = this.updatedAt.getTime()
+    const date2 = new Date().getTime()
+
+    const millisecondsBetween = Math.abs(date2 - date1)
+    const daysBetween = Math.round(millisecondsBetween / DAY_MILLISECONDS)
+
+    return EXPIRY_DAYS - daysBetween
   }
 
   /**
