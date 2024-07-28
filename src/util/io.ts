@@ -35,8 +35,11 @@ export const setupSocketIO = (server: http.Server) => {
         const conversation = await Conversation.findById(convoId)
         const messages = await Message.findByConvoId(convoId, 50, 0)
         socket.emit('messages', { messages, conversation })
-      } catch (_) {
-        socket.emit('error', 'There was an error getting the messages.')
+      } catch (error) {
+        socket.emit(
+          'error',
+          error ? error.toString() : 'There was an error getting the messages.'
+        )
       }
     })
 
