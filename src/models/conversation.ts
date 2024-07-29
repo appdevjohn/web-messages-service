@@ -62,6 +62,23 @@ class Conversation {
     )
   }
 
+  /**
+   * Returns a date and time which this conversation and its messages will be deleted.
+   * @returns The date this conversatoin and its messages will be deleted.
+   */
+  getDeletionDate(): Date | void {
+    if (!this.updatedAt) return
+
+    const deletionDate = new Date()
+    deletionDate.setDate(this.updatedAt.getDate() + EXPIRY_DAYS)
+
+    return deletionDate
+  }
+
+  /**
+   * Finds the number of days until this conversation and its messages will be deleted.
+   * @returns The number of days between now and the deletion date.
+   */
   getDaysRemaining(): number {
     if (!this.updatedAt) return -1
 

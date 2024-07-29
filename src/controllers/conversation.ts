@@ -15,7 +15,7 @@ router.post(
 
       return res.status(200).json({
         conversation: newConversation,
-        daysRemaining: newConversation.getDaysRemaining(),
+        deletionDate: newConversation.getDeletionDate(),
       })
     } catch (error) {
       return res.status(500).json({

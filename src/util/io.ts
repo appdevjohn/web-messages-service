@@ -37,7 +37,7 @@ export const setupSocketIO = (server: http.Server) => {
         socket.emit('messages', {
           messages,
           conversation,
-          daysRemaining: conversation.getDaysRemaining(),
+          deletionDate: conversation.getDeletionDate(),
         })
       } catch (error) {
         socket.emit(
@@ -92,7 +92,7 @@ export const setupSocketIO = (server: http.Server) => {
         socket.emit('response', {
           event: 'create-conversation',
           conversation: newConversation,
-          daysRemaining: newConversation.getDaysRemaining(),
+          deletionDate: newConversation.getDeletionDate(),
         })
       } catch (_) {
         socket.emit('error', 'There was an error creating the conversation.')
