@@ -4,6 +4,27 @@ import Conversation from '../models/conversation'
 
 const router = Router()
 
+router.get(
+  '/conversation/:convoId',
+  async (req: Request, res: Response, next: NextFunction) => {
+    const convoId: string = req.params.convoId
+
+    try {
+      const conversation = await Conversation.findById(convoId)
+
+      return res.status(200).json({
+        conversation: conversation,
+        deletionDate: conversation.getDeletionDate(),
+      })
+    } catch (error) {
+      return res.status(500).json({
+        error: error,
+        errorMessage: 'A server error has occured. Please try again later.',
+      })
+    }
+  }
+)
+
 router.post(
   '/conversation',
   async (req: Request, res: Response, next: NextFunction) => {
