@@ -53,10 +53,7 @@ class Conversation {
     if (!this.id) return
     await query(
       `
-      WITH convo_deletes AS (
-        DELETE FROM conversations WHERE convo_id = $1 RETURNING convo_id
-      )
-      DELETE FROM messages WHERE convo_id IN (SELECT convo_id from convo_deletes);
+      DELETE FROM conversations WHERE convo_id = $1 RETURNING convo_id;
       `,
       [this.id]
     )
@@ -120,10 +117,7 @@ class Conversation {
     if (shouldDelete) {
       await query(
         `
-        WITH convo_deletes AS (
-          DELETE FROM conversations WHERE updated_at < $1 RETURNING convo_id
-        )
-        DELETE FROM messages WHERE convo_id IN (SELECT convo_id from convo_deletes);
+        DELETE FROM conversations WHERE updated_at < $1 RETURNING convo_id;
         `,
         [`${date.toISOString().split('T')[0]}`]
       )
