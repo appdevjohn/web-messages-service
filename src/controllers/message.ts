@@ -23,7 +23,7 @@ router.get(
       return res.status(200).json({
         messages: messages,
         conversation: conversation,
-        daysRemaining: conversation.getDaysRemaining(),
+        deletionDate: conversation.getDeletionDate(),
       })
     } catch (error) {
       return res.status(500).json({
